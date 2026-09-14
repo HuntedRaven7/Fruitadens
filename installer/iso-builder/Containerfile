@@ -1,0 +1,26 @@
+FROM fedora:42
+
+RUN dnf -y update && dnf -y install \
+    podman \
+    dialog \
+    findutils \
+    util-linux \
+    gdisk \
+    ncurses \
+    curl \
+    git \
+    xorriso \
+    dracut \
+    dracut-tools \
+    dracut-live \
+    syslinux \
+    syslinux-extlinux \
+    squashfs-tools \
+    && dnf clean all
+
+COPY build-iso.sh /usr/local/bin/build-iso.sh
+RUN chmod +x /usr/local/bin/build-iso.sh
+
+WORKDIR /workspace
+
+ENTRYPOINT ["/usr/local/bin/build-iso.sh"]
