@@ -20,7 +20,7 @@ just installer-build
 
 ## Build ISO in container
 
-Requires `podman` and `--privileged` container runtime.
+Requires `podman` with `--privileged` support.
 
 ```bash
 FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable just installer-iso
@@ -30,19 +30,13 @@ Or run the ISO builder directly:
 
 ```bash
 podman build -t fruitadens-iso-builder:latest installer/iso-builder/
-mkdir -p /tmp/fruitadens-iso/{output,installer}
-cp installer/kickstart.ks /tmp/fruitadens-iso/installer/
+mkdir -p /tmp/fruitadens-iso/output/iso /tmp/fruitadens-iso/output/rootfs
 podman run --rm --privileged \
   -v /tmp/fruitadens-iso:/workspace \
   -e FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable \
   fruitadens-iso-builder:latest
 ```
 
-Output: `/tmp/fruitadens-iso/output/iso/*.iso`
+Output: `/tmp/fruitadens-iso/output/fruitadens-installer.iso`
 
-## ISO contents
-
-- Fedora minimal base with podman
-- fruitadens-installer container pulled at install time
-- Auto-starts installer TUI on boot via systemd service
-- Supports disk selection, SSH key injection, hostname configuration
+The ISO is a minimal live image that auto-starts the Fruitadens installer TUI on boot. It embeds the installer container and the target Fruitadens image reference.
