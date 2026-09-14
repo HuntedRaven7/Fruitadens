@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eoux pipefail
 
-IMAGE="${FRUITADENS_IMAGE:-ghcr.io/fruitadens/fruitadens:stable}"
+IMAGE="${FRUITADENS_IMAGE:-ghcr.io/huntedraven7/fruitadens:stable}"
 
 if [[ "$(id -u)" -ne 0 ]]; then
   echo "ERROR: installer must run as root" >&2

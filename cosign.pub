@@ -1,0 +1,5 @@
+-----BEGIN PUBLIC KEY-----
+Replace this with your generated cosign public key.
+Run: COSIGN_PASSWORD="" cosign generate-key-pair
+Then paste the contents of cosign.pub here.
+-----END PUBLIC KEY-----
