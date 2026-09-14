@@ -50,7 +50,7 @@ jobs:
           echo "digest=$(cat image-digest.txt)" >> $GITHUB_OUTPUT
 
       - name: Push image
-        if: ${{ inputs.push }}
+        if: ${{ inputs.push && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
         env:
           REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
@@ -58,6 +58,11 @@ jobs:
           echo "${REGISTRY_PASSWORD}" | podman login ghcr.io -u "${REGISTRY_USERNAME}" --password-stdin
           podman push ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-${{ github.run_number }}
           podman push ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}
+
+      - name: Skip push (missing secrets)
+        if: ${{ inputs.push && (secrets.REGISTRY_USERNAME == '' || secrets.REGISTRY_PASSWORD == '') }}
+        run: |
+          echo "::warning::Skipping push: REGISTRY_USERNAME or REGISTRY_PASSWORD secret is not set."
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
