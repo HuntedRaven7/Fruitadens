@@ -12,7 +12,7 @@ ISO_OUTPUT="${OUTPUT_DIR}/iso"
 mkdir -p "$ROOTFS" "$ISO_OUTPUT"
 
 echo "Creating minimal rootfs..."
-dnf -y install --installroot="$ROOTFS" \
+dnf -y install --use-host-config --installroot="$ROOTFS" \
     --releasever=42 \
     --setopt=install_weak_deps=False \
     @core \
@@ -49,7 +49,7 @@ WantedBy=multi-user.target
 EOF
 
 mkdir -p "$ROOTFS/etc/systemd/system/multi-user.target.wants"
-ln -s /etc/systemd/system/fruitadens-auto-install.service \
+ln -sf /etc/systemd/system/fruitadens-auto-install.service \
   "$ROOTFS/etc/systemd/system/multi-user.target.wants/fruitadens-auto-install.service"
 
 mkdir -p "$ROOTFS/opt/installer"
