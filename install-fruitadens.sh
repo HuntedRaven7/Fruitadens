@@ -66,8 +66,6 @@ curl -sSL "${K0S_URL}" -o /tmp/k0s-bin
 install -D -m 0755 /tmp/k0s-bin /usr/lib/extensions/k0s/usr/bin/k0s
 rm -f /tmp/k0s-bin
 
-systemd-sysext merge /usr/lib/extensions/k0s
-
 #### TWEAKS
 sed -i '/^PRETTY_NAME/s/"$/ (Fruitadens)"/' /usr/lib/os-release
 sed -i 's|^VARIANT_ID=.*|VARIANT_ID=fruitadens|' /usr/lib/os-release

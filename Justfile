@@ -6,13 +6,11 @@ IMAGE_NAME := "fruitadens"
 UPSTREAM_IMAGE := "quay.io/fedora/fedora-coreos:stable"
 
 # Streams
-streams := stable testing
+# stable, testing
 
 # Derived
 containerfile := "Containerfile"
 date := `date +%Y%m%d`
-
-.PHONY: help clean build push test-vm validate installer-build installer-push installer-iso
 
 help:
 	@echo "Fruitadens build system"
