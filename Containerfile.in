@@ -5,7 +5,6 @@ COPY / /
 # /* fruitadens image */
 FROM quay.io/fedora/fedora-coreos:stable AS fruitadens
 COPY system_files/etc /etc
-COPY system_files/usr/lib /usr/lib/
 COPY system_files/usr/sbin /usr/sbin/
 RUN --mount=type=cache,dst=/var/cache/libdnf5 \
     --mount=type=cache,dst=/var/cache/rpm-ostree \
