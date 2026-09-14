@@ -21,3 +21,6 @@ Containerfile
 # OS
 .DS_Store
 Thumbs.db
+
+# AI
+.kilo/

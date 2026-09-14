@@ -55,7 +55,7 @@ podman run --rm --privileged \
   -v /var/lib/containers:/var/lib/containers \
   -v /dev:/dev \
   --security-opt label=type:unconfined_t \
-  ghcr.io/fruitadens/fruitadens-installer:latest
+  ghcr.io/huntedraven7/fruitadens-installer:latest
 ```
 
 ### Using the installer ISO
@@ -73,7 +73,7 @@ Boot the ISO and follow the TUI prompts to select disk, SSH key, and hostname.
 Install Fedora CoreOS, then rebase:
 
 ```bash
-sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/fruitadens/fruitadens:stable
+sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/huntedraven7/fruitadens:stable
 ```
 
 ### Manual install
@@ -83,7 +83,7 @@ podman run --rm --privileged \
   -v /var/lib/containers:/var/lib/containers \
   -v /dev:/dev \
   --security-opt label=type:unconfined_t \
-  ghcr.io/fruitadens/fruitadens:stable \
+  ghcr.io/huntedraven7/fruitadens:stable \
   bootc install to-disk /dev/sda \
     --root-ssh-authorized-keys "ssh-ed25519 ..." \
     --karg hostname=fruitadens
