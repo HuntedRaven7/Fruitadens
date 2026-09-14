@@ -7,6 +7,7 @@
 *.vmdk
 *.vhd
 *.iso
+installer/build/
 
 # Podman
 *.tar
