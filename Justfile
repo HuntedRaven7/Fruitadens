@@ -81,6 +81,7 @@ installer-push: installer-build
 	podman push ghcr.io/fruitadens/fruitadens-installer:latest
 
 installer-iso: installer-build
+	rm -f installer/build/installer.tar
 	podman save ghcr.io/fruitadens/fruitadens-installer:latest -o installer/build/installer.tar
 	mkdir -p installer/build/output installer/build/installer
 	FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable \
