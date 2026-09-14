@@ -52,41 +52,39 @@ jobs:
           echo "digest=$(cat image-digest.txt)" >> $GITHUB_OUTPUT
 
       - name: Push image
+        if: ${{ inputs.push }}
         id: push-image
-        if: ${{ inputs.push && secrets.REGISTRY_USERNAME != '' && secrets.REGISTRY_PASSWORD != '' }}
         env:
           REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
         run: |
+          if [[ -z "${REGISTRY_USERNAME}" || -z "${REGISTRY_PASSWORD}" ]]; then
+            echo "::warning::Skipping push: REGISTRY_USERNAME or REGISTRY_PASSWORD secret is not set."
+            exit 0
+          fi
           echo "${REGISTRY_PASSWORD}" | podman login ghcr.io -u "${REGISTRY_USERNAME}" --password-stdin
           podman push --digestfile=/tmp/digestfile ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-${{ github.run_number }}
           podman push --digestfile=/tmp/digestfile ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}
           echo "digest=$(cat /tmp/digestfile)" >> $GITHUB_OUTPUT
 
-      - name: Skip push (missing secrets)
-        if: ${{ inputs.push && (secrets.REGISTRY_USERNAME == '' || secrets.REGISTRY_PASSWORD == '') }}
-        run: |
-          echo "::warning::Skipping push: REGISTRY_USERNAME or REGISTRY_PASSWORD secret is not set."
-
       - name: Install Cosign
-        if: ${{ inputs.push && secrets.SIGNING_SECRET != '' }}
+        if: ${{ inputs.push && steps.push-image.outcome == 'success' }}
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
         with:
           cosign-release: 'v3.1.2'
 
       - name: Sign container image
-        if: ${{ inputs.push && secrets.SIGNING_SECRET != '' }}
+        if: ${{ inputs.push && steps.push-image.outcome == 'success' }}
         env:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
           DIGEST: ${{ steps.push-image.outputs.digest }}
         run: |
+          if [[ -z "${COSIGN_PRIVATE_KEY}" ]]; then
+            echo "::warning::Skipping signing: SIGNING_SECRET is not set."
+            exit 0
+          fi
           cosign sign -y --new-bundle-format=false --use-signing-config=false --key env://COSIGN_PRIVATE_KEY ghcr.io/fruitadens/fruitadens@${DIGEST}
-
-      - name: Skip signing (missing secret)
-        if: ${{ inputs.push && secrets.SIGNING_SECRET == '' }}
-        run: |
-          echo "::warning::Skipping signing: SIGNING_SECRET is not set."
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
