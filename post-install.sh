@@ -11,4 +11,3 @@ ln -s ../usr/share/zoneinfo/UTC /etc/localtime
 cp -a /etc/firewalld/firewalld-server.conf /etc/firewalld/firewalld.conf
 
 systemctl enable systemd-sysext.service
-systemctl enable cockpit.socket
