@@ -15,24 +15,34 @@ podman run --rm --privileged \
 ## Build installer container
 
 ```bash
-cd installer
-podman build -t fruitadens-installer:latest .
+just installer-build
 ```
 
-## Build ISO
+## Build ISO in container
 
-Requires `lorax`, `xorriso`, and `skopeo`.
+Requires `podman` and `--privileged` container runtime.
 
 ```bash
-cd installer
-sudo ./build-iso.sh
+FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable just installer-iso
 ```
 
-Output: `fruitadens-installer-YYYY.MM.DD.iso`
+Or run the ISO builder directly:
+
+```bash
+podman build -t fruitadens-iso-builder:latest installer/iso-builder/
+mkdir -p /tmp/fruitadens-iso/{output,installer}
+cp installer/kickstart.ks /tmp/fruitadens-iso/installer/
+podman run --rm --privileged \
+  -v /tmp/fruitadens-iso:/workspace \
+  -e FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable \
+  fruitadens-iso-builder:latest
+```
+
+Output: `/tmp/fruitadens-iso/output/iso/*.iso`
 
 ## ISO contents
 
 - Fedora minimal base with podman
-- fruitadens-installer container pre-loaded
-- Auto-starts installer TUI on boot
+- fruitadens-installer container pulled at install time
+- Auto-starts installer TUI on boot via systemd service
 - Supports disk selection, SSH key injection, hostname configuration

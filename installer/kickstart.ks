@@ -32,9 +32,35 @@ gdisk
 ncurses
 curl
 git
-
 %end
 
 %post
+
+cat > /etc/systemd/system/fruitadens-auto-install.service <<'EOF'
+[Unit]
+Description=Fruitadens Auto-Install
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/etc/fruitadens-installed
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/podman run --rm --privileged \
+    --pid=host --ipc=host \
+    -v /var/lib/containers:/var/lib/containers \
+    -v /dev:/dev \
+    --security-opt label=type:unconfined_t \
+    IMAGE_PLACEHOLDER
+ExecStartPost=/usr/bin/touch /etc/fruitadens-installed
+StandardOutput=tty
+TTYPath=/dev/console
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sed -i "s|IMAGE_PLACEHOLDER|${FRUITADENS_IMAGE}|g" /etc/systemd/system/fruitadens-auto-install.service
+
+systemctl enable fruitadens-auto-install.service
 
 %end

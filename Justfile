@@ -80,5 +80,12 @@ installer-build:
 installer-push: installer-build
 	podman push ghcr.io/fruitadens/fruitadens-installer:latest
 
-installer-iso: installer-build
-	installer/build-iso.sh
+installer-iso:
+	podman build -t fruitadens-iso-builder:latest installer/iso-builder/
+	mkdir -p installer/build/output installer/build/installer
+	cp installer/kickstart.ks installer/build/installer/
+	FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable \
+	podman run --rm --privileged \
+		-v ./installer/build:/workspace \
+		-e FRUITADENS_IMAGE=ghcr.io/fruitadens/fruitadens:stable \
+		fruitadens-iso-builder:latest
