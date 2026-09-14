@@ -1,0 +1,18 @@
+set shell := ["bash", "-c"]
+
+IMAGE_NAME := "fruitadens-installer"
+INSTALLER_DIR := "installer"
+
+.PHONY: build push iso clean
+
+build:
+	podman build -t $(IMAGE_NAME):latest $(INSTALLER_DIR)
+
+push:
+	podman push $(IMAGE_NAME):latest
+
+iso: build
+	$(INSTALLER_DIR)/build-iso.sh
+
+clean:
+	rm -rf installer/build

@@ -1,0 +1,16 @@
+# /* FROMs for copying */
+FROM scratch AS ctx
+COPY / /
+
+# /* fruitadens image */
+FROM quay.io/fedora/fedora-coreos:stable AS fruitadens
+COPY system_files/etc /etc
+COPY system_files/usr/lib /usr/lib/
+COPY system_files/usr/sbin /usr/sbin/
+RUN --mount=type=cache,dst=/var/cache/libdnf5 \
+    --mount=type=cache,dst=/var/cache/rpm-ostree \
+    --mount=type=bind,from=ctx,src=/,dst=/ctx \
+    /ctx/install-fruitadens.sh \
+    && /ctx/post-install.sh \
+    && /ctx/cleanup.sh
+RUN ["bootc", "container", "lint"]

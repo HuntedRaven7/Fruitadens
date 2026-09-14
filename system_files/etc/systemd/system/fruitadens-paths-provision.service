@@ -1,0 +1,11 @@
+[Unit]
+Description=Provision restricted paths under /var for podman, bootc, and systemd-sysext
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/fruitadens-paths-provision.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

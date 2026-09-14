@@ -1,0 +1,23 @@
+# Generated files
+Containerfile
+
+# Build artifacts
+*.raw
+*.qcow2
+*.vmdk
+*.vhd
+*.iso
+
+# Podman
+*.tar
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

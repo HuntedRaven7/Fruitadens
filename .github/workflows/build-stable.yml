@@ -1,0 +1,17 @@
+name: Build Stable
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-build.yml
+    with:
+      stream: stable
+      upstream-image: quay.io/fedora/fedora-coreos:stable
+      push: true
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.GHCR_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.GHCR_TOKEN }}

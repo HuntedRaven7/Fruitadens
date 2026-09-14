@@ -1,0 +1,11 @@
+[Unit]
+Description=Restore SELinux contexts for gssproxy
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/find /etc/gss /etc/krb5.conf.d -type f -exec /usr/sbin/restorecon -v {} \; 2>/dev/null || true
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

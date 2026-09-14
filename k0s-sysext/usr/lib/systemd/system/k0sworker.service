@@ -1,0 +1,13 @@
+[Unit]
+Description=k0s Worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/k0s worker
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

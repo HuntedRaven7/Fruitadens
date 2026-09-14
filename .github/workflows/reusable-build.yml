@@ -1,0 +1,68 @@
+name: Reusable Build
+
+on:
+  workflow_call:
+    inputs:
+      stream:
+        required: true
+        type: string
+      upstream-image:
+        required: true
+        type: string
+      push:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      REGISTRY_USERNAME:
+        required: false
+      REGISTRY_PASSWORD:
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cpp podman
+
+      - name: Preprocess Containerfile
+        run: cpp -P -C -traditional-cpp Containerfile.in > Containerfile
+
+      - name: Build image
+        run: |
+          podman build --layers \
+            -f Containerfile \
+            -t ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local .
+
+      - name: Inspect image
+        id: inspect
+        run: |
+          podman inspect ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local --format '{{index .Id}}' | tee image-digest.txt
+          echo "digest=$(cat image-digest.txt)" >> $GITHUB_OUTPUT
+
+      - name: Push image
+        if: ${{ inputs.push }}
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: |
+          echo "${REGISTRY_PASSWORD}" | podman login ghcr.io -u "${REGISTRY_USERNAME}" --password-stdin
+          podman push ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-${{ github.run_number }}
+          podman push ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}-local ghcr.io/fruitadens/fruitadens:${{ inputs.stream }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fruitadens-${{ inputs.stream }}
+          path: |
+            Containerfile
+            image-digest.txt

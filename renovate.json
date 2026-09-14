@@ -1,0 +1,65 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "enabledManagers": [
+    "dockerfile",
+    "github-actions",
+    "shellscript"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^install-fruitadens\\.sh$"],
+      "matchStrings": [
+        "K0S_VERSION=\"(?<currentValue>v\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "k0sproject/k0s",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "v(?<version>\\d+\\.\\d+\\.\\d+)",
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "pin": {
+    "automerge": true
+  },
+  "major": {
+    "automerge": false
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["dockerfile"],
+      "groupName": "container base images",
+      "groupSlug": "container-images",
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "groupSlug": "github-actions",
+      "automerge": true,
+      "automergeType": "branch"
+    },
+    {
+      "matchManagers": ["shellscript"],
+      "matchPackageNames": ["k0sproject/k0s"],
+      "groupName": "k0s",
+      "groupSlug": "k0s",
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ],
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "timezone": "UTC",
+  "prConcurrentLimit": 3,
+  "prCreation": "not-pending",
+  "branchConcurrentLimit": 5,
+  "dependencyDashboard": true,
+  "labels": [
+    "dependencies"
+  ]
+}
