@@ -54,14 +54,13 @@ ln -s /etc/systemd/system/fruitadens-auto-install.service \
 
 mkdir -p "$ROOTFS/opt/installer"
 
-echo "Building installer container for embedding..."
-if ! podman image exists "$INSTALLER_IMAGE" 2>/dev/null; then
-  echo "Building installer container..."
-  podman build -t "$INSTALLER_IMAGE" "$INSTALLER_DIR"
+echo "Loading installer container from pre-built tar..."
+if [[ ! -f "${WORKDIR}/installer/installer.tar" ]]; then
+  echo "ERROR: installer.tar not found at ${WORKDIR}/installer/installer.tar" >&2
+  echo "Build the installer first with: just installer-build" >&2
+  exit 1
 fi
-
-echo "Saving installer container..."
-podman save "$INSTALLER_IMAGE" -o "$ROOTFS/opt/installer/installer.tar"
+cp "${WORKDIR}/installer/installer.tar" "$ROOTFS/opt/installer/installer.tar"
 
 echo "Creating squashfs of rootfs..."
 mksquashfs "$ROOTFS" "${OUTPUT_DIR}/rootfs.squashfs" -noappend -comp xz
