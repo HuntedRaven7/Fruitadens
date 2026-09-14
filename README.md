@@ -120,3 +120,27 @@ systemd-sysext list
 - **GitHub Actions versions** in `.github/workflows/`
 
 Renovate runs weekly and creates grouped PRs for each dependency category.
+
+## Image Signing
+
+Images are signed with [cosign](https://docs.sigstore.dev/cosign/) using a key pair.
+
+### Setup
+
+1. Install cosign: https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-install-cosign/
+2. Generate a key pair (no password):
+   ```bash
+   COSIGN_PASSWORD="" cosign generate-key-pair
+   ```
+3. Add the private key as a GitHub secret named `SIGNING_SECRET`:
+   ```bash
+   gh secret set SIGNING_SECRET < cosign.key
+   ```
+4. Commit the public key to this repository as `cosign.pub`
+5. Add `SIGNING_SECRET` to your GitHub repository secrets
+
+### Verify a signed image
+
+```bash
+cosign verify ghcr.io/fruitadens/fruitadens:stable --key cosign.pub
+```
