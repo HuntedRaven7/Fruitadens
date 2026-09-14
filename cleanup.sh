@@ -2,7 +2,7 @@
 set -eoux pipefail
 
 find /boot/ -maxdepth 1 -mindepth 1 -exec rm -fr {} \; || true
-find /tmp/* -maxdepth 0 -type d \! -name rpms -exec rm -fr {} \;
+find /tmp -maxdepth 1 -mindepth 1 -type d \! -name rpms -exec rm -fr {} \; 2>/dev/null || true
 find /var/* -maxdepth 0 -type d \! -name cache -exec rm -fr {} \;
 find /var/cache/* -maxdepth 0 -type d \! -name libdnf5 \! -name rpm-ostree -exec rm -fr {} \;
 
